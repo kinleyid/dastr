@@ -9,10 +9,9 @@ def parse(path, params, master_dict={}):
 	else: # We're looping through every file in this level to collect attributes
 		for curr_path_head in os.listdir(path):
 			curr_dict = master_dict.copy()
-			if len(curr_param) == 2: # There are attributes to be added at this level of the hierarchy
-				pattern, curr_attrs = curr_param
-				if type(curr_attrs) != tuple:
-					curr_attrs = (curr_attrs,)
+			if len(curr_param) >= 2: # There are attributes to be added at this level of the hierarchy
+				pattern = curr_param[0]
+				curr_attrs = curr_param[1:]
 				matches = re.findall(pattern, curr_path_head)[0]
 				if type(matches) == str:
 					matches = (matches,)
@@ -32,13 +31,12 @@ def write(path, params, all_entities):
 	for entity in all_entities:
 		destination = ''
 		for param in params:
-			if len(param) == 2: # Param is a tuple
-				fmt, args = param
-				if type(args) == str:
-					args = [args]
-				curr_path_head = fmt % tuple([entity['attrs'][attr] for attr in args])
-			else: # Param is a string
+			if type(param) == str:
 				curr_path_head = param
+			else: # Param is a tuple
+				fmt = param[0]
+				args = param[1:]
+				curr_path_head = fmt % tuple([entity['attrs'][attr] for attr in args])
 			destination = os.path.join(destination, curr_path_head)
 		destination = os.path.join(path, destination)
 		os.makedirs(os.path.dirname(destination), exist_ok=True)
