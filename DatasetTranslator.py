@@ -1,14 +1,11 @@
 
 import os, re, shutil
 
-def read(path, params, master_dict={}, disp=False, tab_level=0):
-	if disp:
-		head, tail = os.path.split(path)
-		print(' '*tab_level + tail)
+def read(path, params, master_dict={}):
 	all_files = [] # That which will be returned
 	curr_param = params[0]
 	if type(curr_param) == str: # We're just going down a level in the file hierarchy
-		all_files += read(os.path.join(path, curr_param), params[1:], master_dict=master_dict, tab_level=tab_level+1, disp=disp)
+		all_files += read(os.path.join(path, curr_param), params[1:], master_dict=master_dict)
 	else: # We're looping through every file in this level to collect attributes
 		for curr_path_head in os.listdir(path):
 			curr_attrs = master_dict.copy()
@@ -22,7 +19,7 @@ def read(path, params, master_dict={}, disp=False, tab_level=0):
 					curr_attrs[attrs_to_read[idx]] = matches[idx] # Add attributes
 			curr_path = os.path.join(path, curr_path_head)
 			if os.path.isdir(curr_path): # Recursion if we're currently on a folder
-				all_files += read(curr_path, params[1:], master_dict=curr_attrs, tab_level=tab_level+1, disp=disp)
+				all_files += read(curr_path, params[1:], master_dict=curr_attrs)
 			else: # Bottom of file hierarchy
 				all_files += [{
 					'path': curr_path,
