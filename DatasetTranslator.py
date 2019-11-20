@@ -52,7 +52,6 @@ def write(all_files, path, params, disp=False, move=True):
 				curr_path_head = param[0] % tuple(file['attrs'][attr] for attr in param[1:])
 			curr_destination = os.path.join(curr_destination, curr_path_head)
 		curr_destination = os.path.join(path, curr_destination)
-		destinations.append(curr_destination)
 		if disp: # Let the user double check that the destination paths are ok
 			print(curr_destination)
 		if move: # Commit to copying the files
