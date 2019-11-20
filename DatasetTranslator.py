@@ -38,18 +38,20 @@ def translate(all_files, translation, direction='forward'):
 				all_files[fileidx]['attrs'][attr] = new_val
 	return all_files
 
-def write(all_files, path, params, print_only=False):
+def write(all_files, path, params, disp=False, move=True):
+	destinations = []
 	for file in all_files:
-		destination = ''
+		curr_destination = ''
 		for param in params:
 			if type(param) == str: # We are adding a static name to the path
 				curr_path_head = param
 			else: # We are adding a formatted name to the path
 				curr_path_head = param[0] % tuple(file['attrs'][attr] for attr in param[1:])
-			destination = os.path.join(destination, curr_path_head)
-		destination = os.path.join(path, destination)
-		if print_only: # Let the user double check that the destination paths are ok
-			print(destination)
-		else: # Commit to copying the files
-			os.makedirs(os.path.dirname(destination), exist_ok=True)
-			shutil.copy(file['path'], destination)
+			curr_destination = os.path.join(curr_destination, curr_path_head)
+		curr_destination = os.path.join(path, curr_destination)
+		if disp: # Let the user double check that the destination paths are ok
+			print(curr_destination)
+		if move: # Commit to copying the files
+			os.makedirs(os.path.dirname(curr_destination), exist_ok=True)
+			shutil.copy(file['path'], curr_destination)
+	return destinations
