@@ -17,7 +17,7 @@ translation = {
 
 parse_params = [('sub-(.+)', 'sub'), ('ses-(.+)', 'ses'), ()]
 example_path = os.path.join(os.getcwd(), 'example1')
-files = dt.read(example_path, parse_params)
+files = dt.read(example_path, parse_params, disp=True)
 files = dt.translate(files, translation, direction='forward')
 new_path = os.path.join(os.getcwd(), 'example2')
 dt.write(files, new_path, [('sub-%s_ses-%s', 'sub', 'ses'), 'x.txt'], disp=True, move=False)
