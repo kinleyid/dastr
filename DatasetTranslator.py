@@ -3,16 +3,29 @@ import os, re, shutil
 
 def read(path, params, master_dict={}):
 	all_files = [] # That which will be returned
-	curr_param = params[0]
-	if type(curr_param) == str: # We're just going down a level in the file hierarchy
-		all_files += read(os.path.join(path, curr_param), params[1:], master_dict=master_dict)
-	else: # We're looping through every file in this level to collect attributes
-		for curr_path_head in os.listdir(path):
-			curr_attrs = master_dict.copy()
-			if len(curr_param) >= 2: # There are attributes to be added at this level of the hierarchy
-				pattern_to_match = curr_param[0]
-				attrs_to_read = curr_param[1:]
-				matches = re.findall(pattern_to_match, curr_path_head)[0]
+
+	# Preprocess parameters
+	if len(params) == 0:
+		curr_param = '*' # Process all files
+	else:
+		curr_param = params[0] # Filter by regular expression
+
+	for curr_path_head in os.listdir(path):
+		curr_attrs = master_dict.copy()
+
+		# Are we reading attributes?
+		if type(curr_param) == tuple: # Yes
+			pattern = curr_param[0]
+			attrs_to_read = curr_param[1:]
+		else: # No
+			pattern = curr_param
+			attrs_to_read = []
+		matches = re.findall(pattern, curr_path_head)
+		if len(matches) == 0:
+			continue # This one doesn't match, go to the next file/dir in path
+		else:
+			if len(attrs_to_read) > 0: # Read attributes
+				matches = matches[0]
 				if type(matches) == str:
 					matches = (matches,)
 				for idx in range(len(matches)):
