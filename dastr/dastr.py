@@ -1,14 +1,71 @@
 
-import os, re, shutil
+import os, re, shutil, json
+
+def json_to_params(path):
+	
+	# takes the path to a properly formatted .json file and returns a list of parameters for the read() function
+
+	with open(path, 'r') as f:
+		json_params = json.load(f)
+	
+	# json_params can be a list of dicts, a list of lists, or a dict of lists but will have to be converted to a list of dicts
+	if type(json_params) == dict: # dict of lists
+		# I've made these mistakes so someone else is bound to:
+		for bad, good in zip(['patterns', 'attr'], ['pattern', 'attrs']):
+			if bad in json_params.keys():
+				json_params[good] = json_params[bad]
+		json_params = [{
+			'pattern': pattern,
+			'attrs': attrs
+		} for pattern, attrs in zip(json_params['pattern'], json_params['attrs'])]
+	elif type(json_params[0]) is not dict: # list of lists
+		tmp = []
+		for param in json_params:
+			if type(param) is list:
+				curr_pattern = param[0]
+				curr_attrs = param[1:]
+			elif type(param) is str:
+				curr_pattern = param
+				curr_attrs = None
+			if not curr_attrs:
+				curr_attrs = () # just to standardize
+			tmp.append({
+				'pattern': curr_pattern, # a string
+				'attrs': curr_attrs # a list
+			})
+		json_params = tmp
+	else: # list of dicts
+		for bad, good in zip(['patterns', 'attr'], ['pattern', 'attrs']):
+			for idx in range(len(json_params)):
+				if bad in json_params[idx].keys():
+					json_params[idx][good] = json_params[idx][bad]
+
+	read_params = [] # will be populated and returned
+	for curr_json_param in json_params:
+		curr_read_param = () # by default, the parameter will be an empty tuple
+		curr_pattern = curr_json_param['pattern']
+		if curr_pattern: # is there a pattern at all?
+			curr_read_param += (curr_pattern,)
+			curr_attrs = curr_json_param['attrs']
+			if curr_attrs: # are there attributes to read?
+				if type(curr_attrs) == str:
+					curr_attrs = (curr_attrs,)
+				elif type(curr_attrs) == list:
+					curr_attrs = tuple(curr_attrs)
+				curr_read_param += curr_attrs
+		read_params.append(curr_read_param)
+
+	return read_params
 
 def read(path, params, master_dict={}):
+	
 	all_files = [] # That which will be returned
 
 	# Preprocess parameters
-	if len(params) == 0:
-		curr_param = '*' # Process all files
-	else:
-		curr_param = params[0] # Filter by regular expression
+
+	curr_param = params[0] # Shouldn't ever return an error, since params should always be a list
+	if not curr_param:
+		curr_param = '.' # Process all files
 
 	for curr_path_head in os.listdir(path):
 		curr_attrs = master_dict.copy()
@@ -20,6 +77,7 @@ def read(path, params, master_dict={}):
 		else: # No
 			pattern = curr_param
 			attrs_to_read = []
+
 		matches = re.findall(pattern, curr_path_head)
 		if len(matches) == 0:
 			continue # This one doesn't match, go to the next file/dir in path
@@ -41,27 +99,39 @@ def read(path, params, master_dict={}):
 	return all_files # List of dicts
 
 def translate(all_files, translation, direction='forward'):
+	
+	if type(translation) == str: # Are we working with a JSON file?
+		with open(translation, 'r') as f:
+			translation = json.load(f)
+
 	if direction != 'forward': # Swap values and keys
 		translation = {attr: {new: old for old, new in entry.items()} for attr, entry in translation.items()}
+
 	for attr in translation.keys():
 		for fileidx in range(len(all_files)):
 			curr_val = all_files[fileidx]['attrs'][attr]
 			if curr_val in translation[attr]:
 				new_val = translation[attr][curr_val]
 				all_files[fileidx]['attrs'][attr] = new_val
+
 	return all_files
 
 def write(all_files, path, params, disp=False, key='c'):
+	
 	destinations = []
+
 	for file in all_files:
 		curr_destination = ''
+
 		for param in params:
 			if type(param) == str: # We are adding a static name to the path
 				curr_path_head = param
 			else: # We are adding a formatted name to the path
 				curr_path_head = param[0] % tuple(file['attrs'][attr] for attr in param[1:])
 			curr_destination = os.path.join(curr_destination, curr_path_head)
+
 		curr_destination = os.path.join(path, curr_destination)
+		destinations.append(curr_destination)
 		if disp: # Let the user double check that the destination paths are ok
 			print(curr_destination)
 		if key != 'n': # We're actually commiting to creating new files
@@ -70,5 +140,8 @@ def write(all_files, path, params, disp=False, key='c'):
 				func = shutil.copy
 			elif key == 'x': # Cut and paste
 				func = shutil.move
+			else: # Could also be a user-provided function
+				func = key
 			func(file['path'], curr_destination)
+
 	return destinations
