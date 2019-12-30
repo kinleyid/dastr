@@ -5,7 +5,7 @@ setup(
 	packages = ['dastr'],
 	version = '0.1',
 	license = 'MIT',
-	description = 'A tool ',
+	description = 'A tool for translating between scientific data structures',
 	author = 'Isaac Kinley',
 	author_email = 'isaac.kinley@gmail.com',
 	url = 'https://github.com/kinleyid/dastr',

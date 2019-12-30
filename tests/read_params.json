@@ -1,0 +1,25 @@
+[
+{
+	"pattern": "sub-(\d+)",
+	"attrs": "sub"
+},
+{
+	"pattern": "ses-(\d+)",
+	"attrs": "ses"
+},
+{
+	"pattern": "*",
+	"attrs": ""
+}
+]
+
+{
+	"pattern": [
+		"sub-(\d+)",
+		"ses-(\d+)"
+	],
+	"attrs": [
+		"sub",
+		"ses"
+	]
+}
