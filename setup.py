@@ -12,9 +12,9 @@ setup(
 	download_url = 'https://github.com/kinleyid/dastr/archive/v_022.tar.gz',
 	keywords = ['data', 'structure', 'translator'],
 	classifiers = [
-	    'Development Status :: 3 - Alpha',
-	    'Intended Audience :: Science/Research',
-	    'License :: OSI Approved :: MIT License',
-	    'Programming Language :: Python'
-  ],
+		'Development Status :: 3 - Alpha',
+		'Intended Audience :: Science/Research',
+		'License :: OSI Approved :: MIT License',
+		'Programming Language :: Python'
+	],
 )

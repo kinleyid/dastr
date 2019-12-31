@@ -7,38 +7,25 @@ def json_to_params(path):
 
 	with open(path, 'r') as f:
 		json_params = json.load(f)
-	
+
 	# json_params can be a list of dicts, a list of lists, or a dict of lists but will have to be converted to a list of dicts
 	if type(json_params) == dict: # dict of lists
-		# I've made these mistakes so someone else is bound to:
-		for bad, good in zip(['patterns', 'attr'], ['pattern', 'attrs']):
-			if bad in json_params.keys():
-				json_params[good] = json_params[bad]
-		json_params = [{
-			'pattern': pattern,
-			'attrs': attrs
-		} for pattern, attrs in zip(json_params['pattern'], json_params['attrs'])]
-	elif type(json_params[0]) is not dict: # list of lists
-		tmp = []
-		for param in json_params:
-			if type(param) is list:
-				curr_pattern = param[0]
-				curr_attrs = param[1:]
-			elif type(param) is str:
-				curr_pattern = param
-				curr_attrs = None
-			if not curr_attrs:
-				curr_attrs = () # just to standardize
-			tmp.append({
-				'pattern': curr_pattern, # a string
-				'attrs': curr_attrs # a list
-			})
+		tmp = [{k: v} for k in json_params.keys() for v in json_params[k]]
+		n = int(len(tmp)/2)
+		tmp = [{**a, **b} for a, b in zip(tmp[:n], tmp[n:])]
 		json_params = tmp
-	else: # list of dicts
-		for bad, good in zip(['patterns', 'attr'], ['pattern', 'attrs']):
-			for idx in range(len(json_params)):
-				if bad in json_params[idx].keys():
-					json_params[idx][good] = json_params[idx][bad]
+
+	elif type(json_params[0]) is not dict: # list of lists
+		pattern = [p[0] if type(p) == list else p for p in json_params]
+		attrs = [p[1:] if type(p) == list else None for p in json_params]
+		tmp = [{'pattern': p, 'attrs': a} for p, a in zip(pattern, attrs)]
+		json_params = tmp
+
+	# I've made these mistakes so others are bound to	
+	for bad, good in zip(['patterns', 'attr'], ['pattern', 'attrs']):
+		for idx in range(len(json_params)):
+			if bad in json_params[idx].keys():
+				json_params[idx][good] = json_params[idx][bad]
 
 	read_params = [] # will be populated and returned
 	for curr_json_param in json_params:
@@ -57,9 +44,9 @@ def json_to_params(path):
 
 	return read_params
 
-def read(path, params, master_dict={}):
+def read(path=None, params=None, master_dict={}):
 	
-	all_files = [] # That which will be returned
+	files = [] # That which will be returned
 
 	# Preprocess parameters
 
@@ -79,9 +66,7 @@ def read(path, params, master_dict={}):
 			attrs_to_read = []
 
 		matches = re.findall(pattern, curr_path_head)
-		if len(matches) == 0:
-			continue # This one doesn't match, go to the next file/dir in path
-		else:
+		if len(matches): # If this file/dir doesn't match the re pattern, go to the next file/dir in path
 			if len(attrs_to_read) > 0: # Read attributes
 				matches = matches[0]
 				if type(matches) == str:
@@ -90,15 +75,15 @@ def read(path, params, master_dict={}):
 					curr_attrs[attrs_to_read[idx]] = matches[idx] # Add attributes
 			curr_path = os.path.join(path, curr_path_head)
 			if os.path.isdir(curr_path): # Recursion if we're currently on a folder
-				all_files += read(curr_path, params[1:], master_dict=curr_attrs)
+				files += read(curr_path, params[1:], master_dict=curr_attrs)
 			else: # Bottom of file hierarchy
-				all_files += [{
+				files += [{
 					'path': curr_path,
 					'attrs': curr_attrs.copy()
 				}]
-	return all_files # List of dicts
+	return files # List of dicts
 
-def translate(all_files, translation, direction='forward'):
+def translate(files=None, translation=None, direction='forward'):
 	
 	if type(translation) == str: # Are we working with a JSON file?
 		with open(translation, 'r') as f:
@@ -108,19 +93,27 @@ def translate(all_files, translation, direction='forward'):
 		translation = {attr: {new: old for old, new in entry.items()} for attr, entry in translation.items()}
 
 	for attr in translation.keys():
-		for fileidx in range(len(all_files)):
-			curr_val = all_files[fileidx]['attrs'][attr]
+		for fileidx in range(len(files)):
+			curr_val = files[fileidx]['attrs'][attr]
 			if curr_val in translation[attr]:
 				new_val = translation[attr][curr_val]
-				all_files[fileidx]['attrs'][attr] = new_val
+				files[fileidx]['attrs'][attr] = new_val
 
-	return all_files
+	return files
 
-def write(all_files, path, params, disp=False, key='c'):
+def flatten(files=None, path_name='path'):
+	
+	flattened = [file['attrs'].copy() for file in files] # get just the attrs
+	for idx in range(len(files)):
+		flattened[idx][path_name] = files[idx]['path'] # add "path" or whatever as another key-value pair
+	
+	return flattened
+
+def write(files=None, path=None, params=None, disp=False, key='c'):
 	
 	destinations = []
 
-	for file in all_files:
+	for file in files:
 		curr_destination = ''
 
 		for param in params:
