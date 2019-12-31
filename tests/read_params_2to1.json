@@ -1,0 +1,10 @@
+[
+	{
+		"patterns": "sub-(.+)_ses-(.+)",
+		"attrs": ["sub", "ses"]
+	},
+	{
+		"pattern": null,
+		"attr": null
+	}
+]

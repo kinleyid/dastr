@@ -3,13 +3,13 @@ from distutils.core import setup
 setup(
 	name = 'dastr',
 	packages = ['dastr'],
-	version = '0.2.1',
+	version = '0.2.2',
 	license = 'MIT',
 	description = 'A tool for translating between scientific data structures',
 	author = 'Isaac Kinley',
 	author_email = 'isaac.kinley@gmail.com',
 	url = 'https://github.com/kinleyid/dastr',
-	download_url = 'https://github.com/kinleyid/dastr/archive/v_021.tar.gz',
+	download_url = 'https://github.com/kinleyid/dastr/archive/v_022.tar.gz',
 	keywords = ['data', 'structure', 'translator'],
 	classifiers = [
 	    'Development Status :: 3 - Alpha',

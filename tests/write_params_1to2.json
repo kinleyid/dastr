@@ -1,0 +1,10 @@
+{
+	"pattern": [
+		"sub-%s_ses-%s",
+		"x.txt"
+	],
+	"attrs": [
+		["sub", "ses"],
+		null
+	]
+}
