@@ -4,6 +4,7 @@ prevdir = os.path.dirname(os.path.realpath(__file__))
 os.chdir(os.path.join(prevdir, '..', 'dastr'))
 sys.path.append(os.getcwd())
 import dastr
+print(dir(dastr))
 os.chdir(prevdir)
 
 # hardcoded translation
@@ -29,12 +30,13 @@ translation = translation1
 example_path = os.path.join(os.getcwd(), 'example-1')
 # read files using hardcoded params
 read_params = [('sub-(.+)', 'sub'), ('ses-(.+)', 'ses'), ()]
-files1 = dastr.read(example_path, read_params, v=1)
+files1 = dastr.read(example_path, read_params, disp=True)
 # read files using json params
 files2 = dastr.read(example_path,
 	dastr.json_to_params(os.path.join(os.getcwd(), 'read_params_1to2.json')))
 # they should be the same
 assert files1 == files2
+assert dastr.flatten(files1) == dastr.flatten(files2)
 files = files1
 # apply translation
 translated = dastr.translate(files, translation, direction='forward')
@@ -64,6 +66,7 @@ files2 = dastr.read(example_path,
 	dastr.json_to_params(os.path.join(os.getcwd(), 'read_params_2to1.json')))
 # they should be the same
 assert files1 == files2
+assert dastr.flatten(files1) == dastr.flatten(files2)
 files = files1
 # apply translation
 translated = dastr.translate(files, translation, direction='forward')

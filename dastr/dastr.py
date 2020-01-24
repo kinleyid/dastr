@@ -87,6 +87,7 @@ def read(path=None, params=None, master_dict={}, disp=False):
 					[print('\t' + key + ':', new_entity['attrs'][key]) for key in new_entity['attrs']]
 					print('')
 				files += [new_entity]
+
 	return files # List of dicts
 
 def translate(files=None, translation=None, direction='forward'):
@@ -112,7 +113,7 @@ def flatten(files=None, path_name='path'):
 	flattened = [file['attrs'].copy() for file in files] # get just the attrs
 	for idx in range(len(files)):
 		flattened[idx][path_name] = files[idx]['path'] # add "path" or whatever as another key-value pair
-	
+
 	return flattened
 
 def write(files=None, path=None, params=None, disp=False, key='c'):
