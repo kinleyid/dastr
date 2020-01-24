@@ -123,7 +123,7 @@ def todelim(files=None, path=None, delim=',', path_name='path', disp=False):
 		print(filecontents)
 	else:
 		f = open(path, "w")
-		f.write(header + contents)
+		f.write(filecontents)
 		f.close()
 
 def write(files=None, path=None, params=None, disp=False, key='c'):

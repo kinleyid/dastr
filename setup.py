@@ -7,7 +7,7 @@ with open('README.md') as f:
 setup(
 	name = 'dastr',
 	packages = ['dastr'],
-	version = '0.2.10',
+	version = '0.2.11',
 	license = 'MIT',
 	description = 'A tool for translating between scientific data structures',
 	long_description=long_description,
@@ -15,7 +15,7 @@ setup(
 	author = 'Isaac Kinley',
 	author_email = 'isaac.kinley@gmail.com',
 	url = 'https://github.com/kinleyid/dastr',
-	download_url = 'https://github.com/kinleyid/dastr/archive/v_0210.tar.gz',
+	download_url = 'https://github.com/kinleyid/dastr/archive/v_0211.tar.gz',
 	keywords = ['data', 'structure', 'translator'],
 	classifiers = [
 		'Development Status :: 3 - Alpha',
