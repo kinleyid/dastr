@@ -29,7 +29,7 @@ translation = translation1
 example_path = os.path.join(os.getcwd(), 'example-1')
 # read files using hardcoded params
 read_params = [('sub-(.+)', 'sub'), ('ses-(.+)', 'ses'), ()]
-files1 = dastr.read(example_path, read_params)
+files1 = dastr.read(example_path, read_params, v=1)
 # read files using json params
 files2 = dastr.read(example_path,
 	dastr.json_to_params(os.path.join(os.getcwd(), 'read_params_1to2.json')))

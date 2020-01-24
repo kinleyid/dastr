@@ -44,7 +44,7 @@ def json_to_params(path):
 
 	return read_params
 
-def read(path=None, params=None, master_dict={}):
+def read(path=None, params=None, master_dict={}, v=0):
 	
 	files = [] # That which will be returned
 
@@ -75,12 +75,18 @@ def read(path=None, params=None, master_dict={}):
 					curr_attrs[attrs_to_read[idx]] = matches[idx] # Add attributes
 			curr_path = os.path.join(path, curr_path_head)
 			if os.path.isdir(curr_path): # Recursion if we're currently on a folder
-				files += read(curr_path, params[1:], master_dict=curr_attrs)
+				files += read(curr_path, params[1:], master_dict=curr_attrs, v=v)
 			else: # Bottom of file hierarchy
-				files += [{
+				new_entity = {
 					'path': curr_path,
 					'attrs': curr_attrs.copy()
-				}]
+				}
+				if v > 0:
+					print('path:', new_entity['path'])
+					print('attrs:')
+					[print('\t' + key + ':', new_entity['attrs'][key]) for key in new_entity['attrs']]
+					print('')
+				files += [new_entity]
 	return files # List of dicts
 
 def translate(files=None, translation=None, direction='forward'):
