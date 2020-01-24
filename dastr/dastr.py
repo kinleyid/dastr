@@ -44,7 +44,7 @@ def json_to_params(path):
 
 	return read_params
 
-def read(path=None, params=None, master_dict={}, v=0):
+def read(path=None, params=None, master_dict={}, disp=False):
 	
 	files = [] # That which will be returned
 
@@ -81,7 +81,7 @@ def read(path=None, params=None, master_dict={}, v=0):
 					'path': curr_path,
 					'attrs': curr_attrs.copy()
 				}
-				if v > 0:
+				if disp:
 					print('path:', new_entity['path'])
 					print('attrs:')
 					[print('\t' + key + ':', new_entity['attrs'][key]) for key in new_entity['attrs']]

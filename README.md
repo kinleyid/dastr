@@ -27,7 +27,7 @@ files = dastr.read(
 		("p(.+)", "participant ID"),
 		("(.+)\.edf", "session")
 		],
-	v=1)
+	disp=True)
 ```
 The function will start from the folder specified by the `path` argument and go down from there. The action to take at each level of the directory structure is specified by each elements of the `params` argument (a list of tuples, the elements of which will be strings). The first element of each tuple will be a regular expression. If there are any captures in the regular expression, they will be recorded as the attributes specified by the remaining elements of the tuple. For example: `("(.+)\.edf", "session")` in the above means that, once the program gets to the file `/path/to/data/p01/pre.edf` it should run something equivalent in this case to:
 ```python
@@ -35,7 +35,7 @@ curr_file["session"] = re.findall("(.+)\.edf", "pre.edf")[0]
 ```
 If the current file/folder doesn't match the regular expression, this file is skipped. If the tuple is empty, the regular expression defaults to the wildcard character (`.`).
 
-`dastr.read()` returns a `list` of `dicts`s with keys `attrs` and `path`. `path` specifies the path to the actual file while `attrs` contains another dictionary that stores the attributes. I.e., in the above example, `files[0]["path"]` would be `"/path/to/data/p01/pre.edf"` while `files[0]["attrs"]` would be `{"participant ID": "01", "session": "pre"}`. To print this information as it is being read, set the optional argument `v=1` as in the above (or set `v=0` to print nothing).
+`dastr.read()` returns a `list` of `dicts`s with keys `attrs` and `path`. `path` specifies the path to the actual file while `attrs` contains another dictionary that stores the attributes. I.e., in the above example, `files[0]["path"]` would be `"/path/to/data/p01/pre.edf"` while `files[0]["attrs"]` would be `{"participant ID": "01", "session": "pre"}`. To print this information as it is being read, set the optional argument `disp=True` as in the above (or omit this argument to print nothing).
 
 In some cases, this might be all you need. You could use `dastr.flatten()` to get a new `list` of `dict`s with key-value pairs copied from `files[:]["attrs"]`, plus an additional key-value pair specifying the path of the file. This makes perfect input for `DictWriter` from Python's `csv` library. The resulting csv table could be read in by your analysis code, point it to each data file, and take its outputs as new columns. Or maybe you don't want to change your analysis code.
 
