@@ -108,13 +108,23 @@ def translate(files=None, translation=None, direction='forward'):
 
 	return files
 
-def flatten(files=None, path_name='path'):
+def todelim(files=None, path=None, delim=',', path_name='path', disp=False):
 	
 	flattened = [file['attrs'].copy() for file in files] # get just the attrs
 	for idx in range(len(files)):
 		flattened[idx][path_name] = files[idx]['path'] # add "path" or whatever as another key-value pair
-
-	return flattened
+	
+	allkeys = [key for key in flattened[0]]
+	header = delim.join(["\"" + key + "\"" for key in allkeys])
+	contents = '\n'.join([delim.join(["\"" + row[key] + "\"" for key in allkeys]) for row in flattened])
+	filecontents = header + '\n' + contents
+	
+	if disp:
+		print(filecontents)
+	else:
+		f = open(path, "w")
+		f.write(header + contents)
+		f.close()
 
 def write(files=None, path=None, params=None, disp=False, key='c'):
 	

@@ -1,12 +1,12 @@
 Metadata-Version: 2.1
 Name: dastr
-Version: 0.2.9
+Version: 0.2.10
 Summary: A tool for translating between scientific data structures
 Home-page: https://github.com/kinleyid/dastr
 Author: Isaac Kinley
 Author-email: isaac.kinley@gmail.com
 License: MIT
-Download-URL: https://github.com/kinleyid/dastr/archive/v_029.tar.gz
+Download-URL: https://github.com/kinleyid/dastr/archive/v_0210.tar.gz
 Description: # dastr
         
         ## Motivation
