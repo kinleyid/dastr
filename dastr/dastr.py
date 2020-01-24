@@ -75,7 +75,7 @@ def read(path=None, params=None, master_dict={}, disp=False):
 					curr_attrs[attrs_to_read[idx]] = matches[idx] # Add attributes
 			curr_path = os.path.join(path, curr_path_head)
 			if os.path.isdir(curr_path): # Recursion if we're currently on a folder
-				files += read(curr_path, params[1:], master_dict=curr_attrs, v=v)
+				files += read(curr_path, params[1:], master_dict=curr_attrs, disp=disp)
 			else: # Bottom of file hierarchy
 				new_entity = {
 					'path': curr_path,
